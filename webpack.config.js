@@ -32,7 +32,7 @@ module.exports = {
   plugins: [
     new ModuleFederationPlugin({
       name: "Remote",
-      filename: "moduleEntry.js",
+      filename: "RemoteEntry.js",
       exposes: {
         "./App": "./src/App",
         "./Button": "./src/Button",

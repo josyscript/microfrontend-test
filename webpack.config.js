@@ -5,7 +5,15 @@ const { dependencies } = require("./package.json");
 
 module.exports = {
   entry: "./src/index",
+  entry: {
+    app: {
+    import: './src/index'
+   }
+  },
   mode: "development",
+  output: {
+    publicPath: 'auto'
+  },
   devServer: {
     static: {
       directory: path.join(__dirname, "public"),

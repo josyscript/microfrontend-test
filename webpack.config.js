@@ -1,58 +1,68 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
-const path = require("path");
-const { dependencies } = require("./package.json");
-
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ModuleFederationPlugin = require('webpack').container.ModuleFederationPlugin;
+const deps = require('./package.json').dependencies;
 module.exports = {
-  entry: "./src/index",
+  entry: './src/index',
   entry: {
     app: {
-    import: './src/index'
-   }
+      import: './src/index',
+    }
   },
-  mode: "development",
+  cache: false,
+
+  mode: 'development',
+  devtool: 'source-map',
+
+  optimization: {
+    minimize: false,
+  },
+
   output: {
-    publicPath: 'auto'
+    publicPath: 'auto',
   },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "public"),
-    },
-    port: 3001,
+
+  resolve: {
+    extensions: ['.jsx', '.js', '.json', '.mjs'],
   },
-  
+
   module: {
     rules: [
       {
-        test: /\.(js|jsx)?$/,
+        test: /\.m?js$/,
+        type: 'javascript/auto',
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
+        test: /\.jsx?$/,
+        loader: require.resolve('babel-loader'),
         exclude: /node_modules/,
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              presets: ["@babel/preset-env", "@babel/preset-react"],
-            },
-          },
-        ],
+        options: {
+          presets: [require.resolve('@babel/preset-react')],
+        },
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
+
   plugins: [
     new ModuleFederationPlugin({
-      name: "Remote",
-      filename: "RemoteEntry.js",
+      name: 'remote_react_module',
+      filename: 'RemoteEntry.js',
       exposes: {
         "./App": "./src/App",
         "./Button": "./src/Button",
+        './Test': './src/Test',
+      },
+      shared: {
       },
     }),
     new HtmlWebpackPlugin({
-      template: "./public/index.html",
+      template: './public/index.html',
     }),
   ],
-  resolve: {
-    extensions: [".js", ".jsx"],
-    
-  },
-  target: "web",
 };
